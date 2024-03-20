@@ -145,4 +145,12 @@
     </plugins>
   </build>
 
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/Metatavu/vp-kuljetus-transport-management-driver-card-keycloak-auth-provider</url>
+    </repository>
+  </distributionManagement>
+
 </project>
