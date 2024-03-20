@@ -34,7 +34,7 @@ public class DriverCardAuthenticator implements Authenticator {
         Map<String, String> queryParams = authSession.getClientNotes();
         String loginHint = queryParams.get("login_hint");
         AuthenticatorConfigModel config = context.getAuthenticatorConfig();
-        String truckVin = loginHint == null || loginHint.startsWith("truck-vin:") ? "" : loginHint.substring("truck-vin:".length());
+        String truckVin = loginHint == null || !loginHint.startsWith("truck-vin:") ? "" : loginHint.substring("truck-vin:".length());
 
         if (truckVin.isEmpty()) {
             truckVin = config.getConfig().get(DriverCardAuthenticationConfig.DEFAULT_TRUCK_VIN);
