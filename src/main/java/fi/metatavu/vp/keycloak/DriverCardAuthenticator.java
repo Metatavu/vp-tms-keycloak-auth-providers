@@ -37,15 +37,28 @@ public class DriverCardAuthenticator implements Authenticator {
         String truckVin = loginHint == null || !loginHint.startsWith("truck-vin:") ? "" : loginHint.substring("truck-vin:".length());
 
         if (truckVin.isEmpty()) {
+            logger.warn("Could not find truck vin from login hint, using default truck vin");
             truckVin = config.getConfig().get(DriverCardAuthenticationConfig.DEFAULT_TRUCK_VIN);
+        }
+
+        boolean autoLogin = "true".equals(config.getConfig().get(DriverCardAuthenticationConfig.AUTO_LOGIN));
+        if (truckVin.isEmpty()) {
+            logger.warn("Could not find default truck vin, disabling auto login");
+            autoLogin = false;
+        }
+
+        boolean hideTruckVinInput = "true".equals(config.getConfig().get(DriverCardAuthenticationConfig.HIDE_TRUCK_VIN_INPUT));
+        if (truckVin.isEmpty()) {
+            logger.warn("Could not find default truck vin, showing truck vin input");
+            hideTruckVinInput = false;
         }
 
         LoginFormsProvider form = context.form().setExecution(context.getExecution().getId());
         Response response = form
                 .setAttribute("truckVin", truckVin)
                 .setAttribute("autoLoginInterval", config.getConfig().get(DriverCardAuthenticationConfig.AUTO_LOGIN_INTERVAL))
-                .setAttribute("hideTruckVinInput", "true".equals(config.getConfig().get(DriverCardAuthenticationConfig.HIDE_TRUCK_VIN_INPUT)))
-                .setAttribute("autoLogin", "true".equals(config.getConfig().get(DriverCardAuthenticationConfig.AUTO_LOGIN)))
+                .setAttribute("hideTruckVinInput", hideTruckVinInput)
+                .setAttribute("autoLogin", autoLogin)
                 .createForm("card-login-form.ftl");
 
         context.challenge(response);

@@ -14,9 +14,9 @@
                 <#if realm.password>
                     <form id="kc-form-login" onsubmit="login.disabled = true; return true;" action="${url.loginAction}" method="post">
                         <#if hideTruckVinInput>
-                            <input type="hidden" name="truckVin" value="${truckVin}"/>
+                            <input type="hidden" name="truckVin" value="${truckVin!''}"/>
                          <#else>
-                            <input name="truckVin" value="${truckVin}""/>
+                            <input name="truckVin" value="${truckVin!''}"/>
                         </#if>
 
                         <#if !autoLogin>
