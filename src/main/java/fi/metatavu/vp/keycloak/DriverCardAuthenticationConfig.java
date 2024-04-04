@@ -16,9 +16,9 @@ public class DriverCardAuthenticationConfig {
     public static final String VEHICLE_MANAGEMENT_API_URL = "vehicleManagementApiUrl";
 
     /**
-     * Hide truck VIN input
+     * Hide truck id input
      */
-    public static final String HIDE_TRUCK_VIN_INPUT = "hideTruckVinInput";
+    public static final String HIDE_TRUCK_ID_INPUT = "hideTruckIdInput";
 
     /**
      * Auto login
@@ -26,9 +26,9 @@ public class DriverCardAuthenticationConfig {
     public static final String AUTO_LOGIN = "autoLogin";
 
     /**
-     * Default truck VIN
+     * Default truck id
      */
-    public static final String DEFAULT_TRUCK_VIN = "defaultTruckVin";
+    public static final String DEFAULT_TRUCK_ID = "defaultTruckId";
 
     /**
      * Auto login interval

@@ -34,30 +34,30 @@ public class DriverCardAuthenticator implements Authenticator {
         Map<String, String> queryParams = authSession.getClientNotes();
         String loginHint = queryParams.get("login_hint");
         AuthenticatorConfigModel config = context.getAuthenticatorConfig();
-        String truckVin = loginHint == null || !loginHint.startsWith("truck-vin:") ? "" : loginHint.substring("truck-vin:".length());
+        String truckId = loginHint == null || !loginHint.startsWith("truck-id:") ? "" : loginHint.substring("truck-id:".length());
 
-        if (truckVin.isEmpty()) {
-            logger.warn("Could not find truck vin from login hint, using default truck vin");
-            truckVin = config.getConfig().get(DriverCardAuthenticationConfig.DEFAULT_TRUCK_VIN);
+        if (truckId.isEmpty()) {
+            logger.warn("Could not find truck id from login hint, using default truck id");
+            truckId = config.getConfig().get(DriverCardAuthenticationConfig.DEFAULT_TRUCK_ID);
         }
 
         boolean autoLogin = "true".equals(config.getConfig().get(DriverCardAuthenticationConfig.AUTO_LOGIN));
-        if (truckVin.isEmpty()) {
-            logger.warn("Could not find default truck vin, disabling auto login");
+        if (truckId.isEmpty()) {
+            logger.warn("Could not find default truck id, disabling auto login");
             autoLogin = false;
         }
 
-        boolean hideTruckVinInput = "true".equals(config.getConfig().get(DriverCardAuthenticationConfig.HIDE_TRUCK_VIN_INPUT));
-        if (truckVin.isEmpty()) {
-            logger.warn("Could not find default truck vin, showing truck vin input");
-            hideTruckVinInput = false;
+        boolean hideTruckIdInput = "true".equals(config.getConfig().get(DriverCardAuthenticationConfig.HIDE_TRUCK_ID_INPUT));
+        if (truckId.isEmpty()) {
+            logger.warn("Could not find default truck id, showing truck id input");
+            hideTruckIdInput = false;
         }
 
         LoginFormsProvider form = context.form().setExecution(context.getExecution().getId());
         Response response = form
-                .setAttribute("truckVin", truckVin)
+                .setAttribute("truckId", truckId)
                 .setAttribute("autoLoginInterval", config.getConfig().get(DriverCardAuthenticationConfig.AUTO_LOGIN_INTERVAL))
-                .setAttribute("hideTruckVinInput", hideTruckVinInput)
+                .setAttribute("hideTruckIdInput", hideTruckIdInput)
                 .setAttribute("autoLogin", autoLogin)
                 .createForm("card-login-form.ftl");
 
@@ -68,31 +68,31 @@ public class DriverCardAuthenticator implements Authenticator {
     public void action(AuthenticationFlowContext context) {
         KeycloakSession session = context.getSession();
         MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
-        String truckVin = formData.getFirst("truckVin");
+        String truckId = formData.getFirst("truckId");
         RealmModel realm = context.getRealm();
 
         try {
-            DriverCard driverCard = findDriverCardByTruckVin(context.getAuthenticatorConfig(), truckVin);
+            DriverCard driverCard = findDriverCardByTruckId(context.getAuthenticatorConfig(), truckId);
             if (driverCard != null) {
                 UserModel cardUser = session
                     .users()
-                    .searchForUserByUserAttributeStream(realm, "driverCardId", driverCard.getDriverCardId())
+                    .searchForUserByUserAttributeStream(realm, "driverCardId", driverCard.getId())
                     .findFirst()
                     .orElse(null);
 
                 if (cardUser != null) {
-                    logger.info("Driver card found for truck vin: " + truckVin);
+                    logger.info("Driver card found for truck id: " + truckId);
                     context.setUser(cardUser);
                     context.success();
                     return;
                 } else {
-                    logger.info("Driver card not found for truck vin: " + truckVin);
+                    logger.info("Driver card not found for truck id: " + truckId);
                 }
             } else {
-                logger.info("Driver card not found for truck vin: " + truckVin);
+                logger.info("Driver card not found for truck id: " + truckId);
             }
         } catch (InterruptedException | IOException e) {
-            logger.error("Failed to find driver card by truck vin", e);
+            logger.error("Failed to find driver card by truck id", e);
         }
 
         context.resetFlow();
@@ -118,18 +118,17 @@ public class DriverCardAuthenticator implements Authenticator {
      * Finds driver card by truck vin
      *
      * @param config authenticator config
-     * @param truckVin truck vin
+     * @param truckId truck id
      * @return driver card
      * @throws IOException exception thrown when API request fails on I/O level
      * @throws InterruptedException exception thrown when API request is interrupted
      */
-    private DriverCard findDriverCardByTruckVin(AuthenticatorConfigModel config, String truckVin) throws IOException, InterruptedException {
+    private DriverCard findDriverCardByTruckId(AuthenticatorConfigModel config, String truckId) throws IOException, InterruptedException {
         String apiKey = config.getConfig().get("vehicleManagementApiKey");
         String apiUrl = config.getConfig().get("vehicleManagementApiUrl");
 
         URI uri = UriBuilder.fromUri(apiUrl)
-            .path("v1/driverCards")
-            .queryParam("truckVin", truckVin)
+            .path(String.format("v1/trucks/%s/driverCards", truckId))
             .build();
 
         HttpRequest request = HttpRequest.newBuilder()
