@@ -5,43 +5,24 @@ package fi.metatavu.vp.keycloak;
  */
 public class DriverCard {
 
-    private String driverCardId;
-    private String truckVin;
+    private String id;
 
     /**
-     * Returns driver card id
+     * Returns id
      *
-     * @return driver card id
+     * @return id
      */
-    public String getDriverCardId() {
-        return driverCardId;
+    public String getId() {
+        return id;
     }
 
     /**
-     * Sets driver card id
+     * Sets id
      *
-     * @param driverCardId driver card id
+     * @param id id
      */
-    public void setDriverCardId(String driverCardId) {
-        this.driverCardId = driverCardId;
-    }
-
-    /**
-     * Returns truck vin
-     *
-     * @return truck vin
-     */
-    public String getTruckVin() {
-        return truckVin;
-    }
-
-    /**
-     * Sets truck vin
-     *
-     * @param truckVin truck vin
-     */
-    public void setTruckVin(String truckVin) {
-        this.truckVin = truckVin;
+    public void setDriverCardId(String id) {
+        this.id = id;
     }
 
 }
