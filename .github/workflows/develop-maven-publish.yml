@@ -31,12 +31,6 @@ jobs:
     - name: Bump version to develop version
       run: mvn versions:set -DnewVersion=${{ env.BASE_VERSION }}-develop
 
-    - name: Push version changes to develop
-      uses: ad-m/github-push-action@v0.8.0
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: ${{ github.ref }}
-
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
@@ -54,3 +48,18 @@ jobs:
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         git commit --allow-empty -m "Bumped version"
+
+    - name: Push version changes to develop
+      uses: ad-m/github-push-action@v0.8.0
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
+
+    - name: Install staging Keycloak
+      uses: peter-evans/repository-dispatch@v3
+      with:
+        repository: Metatavu/vp-kuljetus-transport-management-keycloak
+        event-type: update-staging
+        token: ${{ secrets.KEYCLOAK_UPDATE_PAT }}
+
+    
