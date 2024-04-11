@@ -27,6 +27,19 @@ jobs:
     - name: Bump version
       run: mvn versions:set -DnextSnapshot=true
 
+    - name: Commit changes
+      run: |
+        git add pom.xml
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git commit --allow-empty -m "Bumped version"
+
+    - name: Push version changes to develop
+      uses: ad-m/github-push-action@v0.6.0
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: develop
+
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
