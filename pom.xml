@@ -3,7 +3,7 @@
 
   <groupId>fi.metatavu.vp.keycloak</groupId>
   <artifactId>vp-kuljetus-transport-management-driver-card-keycloak-auth-provider</artifactId>
-  <version>1.0.5-SNAPSHOT</version>
+  <version>1.0.6-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Keycloak driver card authentication for VP-Kuljetus</name>
   <description>Keycloak provider authenticating users with driver card</description>
