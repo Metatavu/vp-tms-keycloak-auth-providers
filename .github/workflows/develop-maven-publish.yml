@@ -24,15 +24,12 @@ jobs:
         server-id: github
         settings-path: ${{ github.workspace }}
 
-    - name: Bump version
-      run: mvn versions:set -DnextSnapshot=true
-
-    - name: Commit changes
+    - name: Resolve base version
       run: |
-        git add pom.xml
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-        git commit --allow-empty -m "Bumped version"
+        echo "BASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout|cut -d'-' -f1)" >> $GITHUB_ENV
+
+    - name: Bump version to develop version
+      run: mvn versions:set -DnewVersion=${{ env.BASE_VERSION }}-develop
 
     - name: Push version changes to develop
       uses: ad-m/github-push-action@v0.8.0
@@ -47,3 +44,13 @@ jobs:
       run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
       env:
         GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Bump to next snapshot
+      run: mvn versions:set -DnewVersion=${{ env.BASE_VERSION }} && mvn versions:set -DnextSnapshot=true
+
+    - name: Commit changes
+      run: |
+        git add pom.xml
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git commit --allow-empty -m "Bumped version"
