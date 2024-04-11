@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-
+    environment: develop
     runs-on: ubuntu-latest
     permissions:
       contents: write
