@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - develop
-      - feature-3-keycloak-automatic-deployment
-
+      
 jobs:
   build:
     environment: develop
