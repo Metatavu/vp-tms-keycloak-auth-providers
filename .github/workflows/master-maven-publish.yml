@@ -3,7 +3,7 @@ name: Publish Package
 on:
   workflow_dispatch:
     inputs:
-      id:
+      distinct_id:
         description: 'run identifier'
         required: false
         
@@ -15,8 +15,8 @@ jobs:
       packages: write
 
     steps:
-    - name: ${{github.event.inputs.id}}
-      run: echo run identifier ${{ inputs.id }}
+    - name: echo distinct ID ${{ github.event.inputs.distinct_id }}
+      run: echo ${{ github.event.inputs.distinct_id }}
       
     - uses: actions/checkout@v3
 
