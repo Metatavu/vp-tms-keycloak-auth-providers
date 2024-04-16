@@ -30,9 +30,17 @@ jobs:
         git fetch
         git checkout master
         git pull
-        git merge origin/develop
+        CHANGES=$(git log master..origin/develop --oneline)
+        if [[ -z "$CHANGES" ]]; then
+          echo "No changes to merge."
+          echo "has_changes=no" >> $GITHUB_ENV
+        else
+          git merge origin/develop
+          echo "has_changes=yes" >> $GITHUB_ENV
+        fi
 
     - name: Set up JDK 17
+      if: env.has_changes == 'yes'
       uses: actions/setup-java@v3
       with:
         java-version: '17'
@@ -41,37 +49,45 @@ jobs:
         settings-path: ${{ github.workspace }}
 
     - name: Resolve base version
+      if: env.has_changes == 'yes'
       run: |
         echo "BASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout|cut -d'-' -f1)" >> $GITHUB_ENV
 
     - name: Bump version to master version
+      if: env.has_changes == 'yes'
       run: mvn versions:set -DgenerateBackupPoms=false -DnewVersion=${{ env.BASE_VERSION }}
 
     - name: Build with Maven
+      if: env.has_changes == 'yes'
       run: mvn -B package --file pom.xml
 
     - name: Publish to GitHub Packages Apache Maven
+      if: env.has_changes == 'yes'
       run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
       env:
         GITHUB_TOKEN: ${{ github.token }}
 
     - name: Git commit
+      if: env.has_changes == 'yes'
       run: |
         git add pom.xml
         git commit --allow-empty -m "Bumped version"
 
     - name: Merge master -> develop
+      if: env.has_changes == 'yes'
       run: |
         git checkout develop
         git merge master
 
     - name: Push version changes to develop
+      if: env.has_changes == 'yes'
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         branch: develop
 
     - name: Push version changes to master
+      if: env.has_changes == 'yes'
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
