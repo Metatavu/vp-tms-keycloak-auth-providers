@@ -29,6 +29,7 @@ jobs:
       run: |
         git fetch
         git checkout master
+        git pull
         git merge origin/develop
 
     - name: Set up JDK 17
