@@ -27,7 +27,8 @@ jobs:
 
     - name: Merge develop -> master
       run: |
-        git fetch origin develop
+        git fetch
+        git checkout master
         git merge origin/develop
 
     - name: Set up JDK 17
