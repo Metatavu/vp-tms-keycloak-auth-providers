@@ -59,6 +59,17 @@ jobs:
         git add pom.xml
         git commit --allow-empty -m "Bumped version"
 
+    - name: Merge master -> develop
+      run: |
+        git checkout develop
+        git merge master
+
+    - name: Push version changes to develop
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: develop
+
     - name: Push version changes to master
       uses: ad-m/github-push-action@master
       with:
