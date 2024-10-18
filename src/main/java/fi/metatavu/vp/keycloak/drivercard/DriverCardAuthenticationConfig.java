@@ -1,4 +1,4 @@
-package fi.metatavu.vp.keycloak;
+package fi.metatavu.vp.keycloak.drivercard;
 
 /**
  * Driver card authentication configuration options
