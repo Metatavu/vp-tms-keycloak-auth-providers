@@ -1,1 +1,2 @@
-fi.metatavu.vp.keycloak.DriverCardAuthenticatorFactory
+fi.metatavu.vp.keycloak.drivercard.DriverCardAuthenticatorFactory
+fi.metatavu.vp.keycloak.pincode.PinCodeAuthenticatorFactory
