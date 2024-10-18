@@ -1,6 +1,8 @@
 <#import "template.ftl" as layout>
 <@layout.registrationLayout displayMessage=false; section>
-   <#if section = "form">
+  <#if section = "header">
+       ${msg("loginWithPinCodeTitle")}
+   <#elseif section = "form">
         <div id="kc-form">
             <div id="kc-form-wrapper">
                 <form id="kc-form-login" onsubmit="login.disabled = true; return true;" action="${url.loginAction}" method="post">
@@ -11,11 +13,19 @@
                     <input id="deviceId" name="deviceId" value="${deviceId!''}"/>
                   </#if>
 
-                  <label for="pinCode">${msg("pinCode")}</label>
-                  <input id="pinCode" name="pinCode"/>
+                  <div class="vp-pin-code-container">
+                    <label for="pin-code-input">${msg("pinCode")}</label>
+                    <input id="pin-code-input" name="pinCode" type="password"/>
+
+                    <#if messagesPerField.existsError('pinCode')>
+                        <span id="input-error-pin-code" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                            ${msg(messagesPerField.get('pinCode'))}
+                        </span>
+                    </#if>
+                  </div>
 
                   <div id="kc-form-buttons" class="${properties.kcFormGroupClass!}">
-                    <input type="submit" value="${msg("doSubmit")}"/>
+                    <input type="submit" value="${msg("doLogIn")}"/>
                   </div>
                 </form>
             </div>
