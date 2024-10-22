@@ -51,10 +51,25 @@ public class PinCodeAuthenticator implements Authenticator {
 
         boolean hideDeviceIdInput = "true".equals(config.getConfig().get(PinCodeAuthenticationConfig.HIDE_DEVICE_ID_INPUT));
 
-        context.challenge(createLoginForm(context,
-            deviceId,
-            hideDeviceIdInput
-        ));
+        try {
+            if (!isVerifiedClientApp(deviceId, context.getAuthenticatorConfig())) {
+                logger.warn(String.format("Device %s is not verified", deviceId));
+                context.forceChallenge(createLoginForm(context,
+                        deviceId,
+                        hideDeviceIdInput,
+                        "clientAppNotApproved",
+                        "clientApp")
+                );
+            } else {
+                context.challenge(createLoginForm(context,
+                        deviceId,
+                        hideDeviceIdInput
+                ));
+            }
+        } catch (MalformedURLException e) {
+            logger.error("Failed to verify client app", e);
+            context.failure(AuthenticationFlowError.INTERNAL_ERROR);
+        }
     }
 
     @Override
@@ -70,7 +85,12 @@ public class PinCodeAuthenticator implements Authenticator {
         try {
             if (!isVerifiedClientApp(deviceId, context.getAuthenticatorConfig())) {
                 logger.warn(String.format("Device %s is not verified", deviceId));
-                context.failure(AuthenticationFlowError.ACCESS_DENIED);
+                context.forceChallenge(createLoginForm(context,
+                        deviceId,
+                        hideDeviceIdInput,
+                        "clientAppNotApproved",
+                        "deviceId")
+                );
             } else {
                 List<UserModel> pinCodeUsers = session
                         .users()

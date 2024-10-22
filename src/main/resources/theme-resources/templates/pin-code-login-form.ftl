@@ -13,20 +13,26 @@
                     <input id="deviceId" name="deviceId" value="${deviceId!''}"/>
                   </#if>
 
-                  <div class="vp-pin-code-container">
-                    <label for="pin-code-input">${msg("pinCode")}</label>
-                    <input id="pin-code-input" name="pinCode" type="password"/>
+                  <#if messagesPerField.existsError('clientApp')>
+                      <span id="input-error-client-app-not-verified" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                          ${msg(messagesPerField.get('clientApp'))}
+                      </span>
+                  <#else>
+                      <div class="vp-pin-code-container">
+                        <label for="pin-code-input">${msg("pinCode")}</label>
+                        <input id="pin-code-input" name="pinCode" type="password"/>
 
-                    <#if messagesPerField.existsError('pinCode')>
-                        <span id="input-error-pin-code" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
-                            ${msg(messagesPerField.get('pinCode'))}
-                        </span>
-                    </#if>
-                  </div>
+                        <#if messagesPerField.existsError('pinCode')>
+                            <span id="input-error-pin-code" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                                ${msg(messagesPerField.get('pinCode'))}
+                            </span>
+                        </#if>
+                      </div>
 
-                  <div id="kc-form-buttons" class="${properties.kcFormGroupClass!}">
-                    <input type="submit" value="${msg("doLogIn")}"/>
-                  </div>
+                      <div id="kc-form-buttons" class="${properties.kcFormGroupClass!}">
+                        <input type="submit" value="${msg("doLogIn")}"/>
+                      </div>
+                  </#if>
                 </form>
             </div>
         </div>
