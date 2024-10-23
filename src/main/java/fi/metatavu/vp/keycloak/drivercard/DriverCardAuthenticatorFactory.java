@@ -1,4 +1,4 @@
-package fi.metatavu.vp.keycloak;
+package fi.metatavu.vp.keycloak.drivercard;
 
 import org.keycloak.Config;
 import org.keycloak.authentication.Authenticator;
@@ -13,7 +13,7 @@ import java.util.List;
  * Driver card authenticator factory
  */
 public class DriverCardAuthenticatorFactory implements AuthenticatorFactory {
-    private static AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES;
+    private static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES;
 
     @Override
     public String getDisplayType() {

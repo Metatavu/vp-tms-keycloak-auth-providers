@@ -1,9 +1,8 @@
-package fi.metatavu.vp.keycloak;
+package fi.metatavu.vp.keycloak.drivercard;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import fi.metatavu.vp.keycloak.tms.TmsApiClient;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriBuilder;
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.forms.login.LoginFormsProvider;
@@ -13,14 +12,15 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.sessions.AuthenticationSessionModel;
+import org.openapitools.client.ApiException;
+import org.openapitools.client.api.TrucksApi;
+import org.openapitools.client.model.TruckDriverCard;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Driver card authenticator
@@ -42,13 +42,13 @@ public class DriverCardAuthenticator implements Authenticator {
         }
 
         boolean autoLogin = "true".equals(config.getConfig().get(DriverCardAuthenticationConfig.AUTO_LOGIN));
-        if (truckId.isEmpty()) {
+        if (truckId == null || truckId.isEmpty()) {
             logger.warn("Could not find default truck id, disabling auto login");
             autoLogin = false;
         }
 
         boolean hideTruckIdInput = "true".equals(config.getConfig().get(DriverCardAuthenticationConfig.HIDE_TRUCK_ID_INPUT));
-        if (truckId.isEmpty()) {
+        if (truckId == null || truckId.isEmpty()) {
             logger.warn("Could not find default truck id, showing truck id input");
             hideTruckIdInput = false;
         }
@@ -72,13 +72,13 @@ public class DriverCardAuthenticator implements Authenticator {
         RealmModel realm = context.getRealm();
 
         try {
-            DriverCard driverCard = findDriverCardByTruckId(context.getAuthenticatorConfig(), truckId);
+            TruckDriverCard driverCard = findDriverCardByTruckId(context.getAuthenticatorConfig(), truckId);
             if (driverCard != null) {
                 UserModel cardUser = session
-                    .users()
-                    .searchForUserByUserAttributeStream(realm, "driverCardId", driverCard.getId())
-                    .findFirst()
-                    .orElse(null);
+                        .users()
+                        .searchForUserByUserAttributeStream(realm, "driverCardId", driverCard.getId())
+                        .findFirst()
+                        .orElse(null);
 
                 if (cardUser != null) {
                     logger.info("Driver card found for truck id: " + truckId);
@@ -91,8 +91,8 @@ public class DriverCardAuthenticator implements Authenticator {
             } else {
                 logger.info("Driver card not found for truck id: " + truckId);
             }
-        } catch (InterruptedException | IOException e) {
-            logger.error("Failed to find driver card by truck id", e);
+        } catch (MalformedURLException e) {
+            logger.error("Failed to fetch driver card for truck id: " + truckId, e);
         }
 
         context.resetFlow();
@@ -120,34 +120,22 @@ public class DriverCardAuthenticator implements Authenticator {
      * @param config authenticator config
      * @param truckId truck id
      * @return driver card
-     * @throws IOException exception thrown when API request fails on I/O level
-     * @throws InterruptedException exception thrown when API request is interrupted
      */
-    private DriverCard findDriverCardByTruckId(AuthenticatorConfigModel config, String truckId) throws IOException, InterruptedException {
-        String apiKey = config.getConfig().get("vehicleManagementApiKey");
-        String apiUrl = config.getConfig().get("vehicleManagementApiUrl");
+    private TruckDriverCard findDriverCardByTruckId(AuthenticatorConfigModel config, String truckId) throws MalformedURLException {
+        String apiKey = config.getConfig().get(DriverCardAuthenticationConfig.VEHICLE_MANAGEMENT_API_KEY);
+        String apiUrl = config.getConfig().get(DriverCardAuthenticationConfig.VEHICLE_MANAGEMENT_API_URL);
 
-        URI uri = UriBuilder.fromUri(apiUrl)
-            .path(String.format("v1/trucks/%s/driverCards", truckId))
-            .build();
+        TmsApiClient tmsApiClient = new TmsApiClient(apiKey, URI.create(apiUrl).toURL());
+        TrucksApi trucksApi = tmsApiClient.getTrucksApi();
 
-        HttpRequest request = HttpRequest.newBuilder()
-            .uri(uri)
-            .header("X-API-Key", apiKey)
-            .GET()
-            .build();
-
-        HttpResponse<InputStream> response = HttpClient
-            .newBuilder()
-            .build()
-            .send(request, HttpResponse.BodyHandlers.ofInputStream());
-
-        if (response.statusCode() == 200) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            DriverCard[] cards = objectMapper.readValue(response.body(), DriverCard[].class);
-            if (cards.length == 1) {
-                return cards[0];
+        try {
+            List<TruckDriverCard> truckDriverCard = trucksApi.listTruckDriverCards(UUID.fromString(truckId));
+            if (truckDriverCard.size() == 1) {
+                return truckDriverCard.get(0);
             }
+        } catch (ApiException e) {
+            logger.error("Failed to fetch driver card for truck id: " + truckId + ", using apiUrl: " + apiUrl, e);
+            return null;
         }
 
         return null;

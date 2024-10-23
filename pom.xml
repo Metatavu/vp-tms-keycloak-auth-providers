@@ -2,12 +2,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>fi.metatavu.vp.keycloak</groupId>
-  <artifactId>vp-kuljetus-transport-management-driver-card-keycloak-auth-provider</artifactId>
-  <version>1.0.19</version>
+  <artifactId>vp-tms-keycloak-auth-providers</artifactId>
+  <version>1.2.0</version>
   <packaging>jar</packaging>
-  <name>Keycloak driver card authentication for VP-Kuljetus</name>
-  <description>Keycloak provider authenticating users with driver card</description>
-  <url>https://github.com/Metatavu/vp-kuljetus-transport-management-driver-card-keycloak-auth-provider</url>
+  <name>Keycloak auth providers for VP-Kuljetus TMS</name>
+  <description>Custom Keycloak authentication providers for VP-Kuljetus TMS</description>
+  <url>https://github.com/Metatavu/vp-tms-keycloak-auth-providers</url>
 
   <licenses>
     <license>
@@ -32,13 +32,13 @@
 
   <issueManagement>
     <system>GitHub</system>
-    <url>https://github.com/Metatavu/vp-kuljetus-transport-management-driver-card-keycloak-auth-provider/issues</url>
+    <url>https://github.com/Metatavu/vp-tms-keycloak-auth-providers/issues</url>
   </issueManagement>
 
   <scm>
-    <developerConnection>scm:git:git@github.com:Metatavu/vp-kuljetus-transport-management-driver-card-keycloak-auth-provider.git</developerConnection>
-    <url>git@github.com:Metatavu/vp-kuljetus-transport-management-driver-card-keycloak-auth-provider.git</url>
-    <connection>scm:git:git@github.com:Metatavu/vp-kuljetus-transport-management-driver-card-keycloak-auth-provider.git</connection>
+    <developerConnection>scm:git:git@github.com:Metatavu/vp-tms-keycloak-auth-providers.git</developerConnection>
+    <url>git@github.com:Metatavu/vp-tms-keycloak-auth-providers.git</url>
+    <connection>scm:git:git@github.com:Metatavu/vp-tms-keycloak-auth-providers.git</connection>
     <tag>HEAD</tag>
   </scm>
 
@@ -52,7 +52,8 @@
     <java.version>17</java.version>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
-    <keycloak.version>24.0.1</keycloak.version>
+    <keycloak.version>24.0.2</keycloak.version>
+    <jackson.version>2.17.0</jackson.version>
   </properties>
 
   <dependencyManagement>
@@ -95,10 +96,62 @@
       <version>${keycloak.version}</version>
       <scope>provided</scope>
     </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>${jackson.version}</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <version>7.8.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/specs/specs/auth.yaml</inputSpec>
+              <generatorName>java</generatorName>
+              <configOptions>
+                <sourceFolder>src/gen/java/main</sourceFolder>
+                <library>native</library>
+                <annotationLibrary>none</annotationLibrary>
+                <serializationLibrary>jackson</serializationLibrary>
+                <openApiNullable>false</openApiNullable>
+              </configOptions>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <delete>
+                  <fileset dir="${project.build.directory}/generated-sources/openapi/src/test" includes="**/*"/>
+                </delete>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
@@ -149,7 +202,7 @@
     <repository>
       <id>github</id>
       <name>GitHub Packages</name>
-      <url>https://maven.pkg.github.com/Metatavu/vp-kuljetus-transport-management-driver-card-keycloak-auth-provider</url>
+      <url>https://maven.pkg.github.com/Metatavu/vp-tms-keycloak-auth-providers</url>
     </repository>
   </distributionManagement>
 
