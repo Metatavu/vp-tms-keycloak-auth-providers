@@ -54,7 +54,7 @@ public class TmsApiClient {
         apiClient.setPort(apiUrl.getPort());
         apiClient.setBasePath(apiUrl.getPath());
         apiClient.setScheme(apiUrl.getProtocol());
-        apiClient.setRequestInterceptor(request -> request.header("X-API-Key", apiKey));
+        apiClient.setRequestInterceptor(request -> request.header("X-Keycloak-API-Key", apiKey));
         return apiClient;
     }
 

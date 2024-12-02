@@ -122,7 +122,7 @@ public class DriverCardAuthenticator implements Authenticator {
      * @return driver card
      */
     private TruckDriverCard findDriverCardByTruckId(AuthenticatorConfigModel config, String truckId) throws MalformedURLException {
-        String apiKey = config.getConfig().get(DriverCardAuthenticationConfig.VEHICLE_MANAGEMENT_API_KEY);
+        String apiKey = config.getConfig().get(DriverCardAuthenticationConfig.KEYCLOAK_API_KEY);
         String apiUrl = config.getConfig().get(DriverCardAuthenticationConfig.VEHICLE_MANAGEMENT_API_URL);
 
         TmsApiClient tmsApiClient = new TmsApiClient(apiKey, URI.create(apiUrl).toURL());

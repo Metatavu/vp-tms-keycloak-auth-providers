@@ -8,7 +8,7 @@ public class PinCodeAuthenticationConfig {
     /**
      * User management API key
      */
-    public static final String USER_MANAGEMENT_API_KEY = "userManagementApiKey";
+    public static final String KEYCLOAK_API_KEY = "keycloakApiKey";
 
     /**
      * User management API URL

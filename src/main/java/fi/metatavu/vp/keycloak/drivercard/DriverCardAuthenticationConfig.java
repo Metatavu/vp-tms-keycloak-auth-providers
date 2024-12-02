@@ -8,7 +8,7 @@ public class DriverCardAuthenticationConfig {
     /**
      * Vehicle management API key
      */
-    public static final String VEHICLE_MANAGEMENT_API_KEY = "vehicleManagementApiKey";
+    public static final String KEYCLOAK_API_KEY = "keycloakApiKey";
 
     /**
      * Vehicle management API URL
