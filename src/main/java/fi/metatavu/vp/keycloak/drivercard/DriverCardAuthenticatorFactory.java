@@ -52,7 +52,7 @@ public class DriverCardAuthenticatorFactory implements AuthenticatorFactory {
             .name(DriverCardAuthenticationConfig.KEYCLOAK_API_KEY)
             .type(ProviderConfigProperty.STRING_TYPE)
             .label("Keycloak API Key")
-            .helpText("API key for Keycloak access")
+            .helpText("API key for Keycloak to access vp-tms API")
             .add()
             .property()
             .name(DriverCardAuthenticationConfig.VEHICLE_MANAGEMENT_API_URL)
