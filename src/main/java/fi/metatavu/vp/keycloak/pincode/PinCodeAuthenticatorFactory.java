@@ -54,7 +54,7 @@ public class PinCodeAuthenticatorFactory implements AuthenticatorFactory {
             .name(PinCodeAuthenticationConfig.KEYCLOAK_API_KEY)
             .type(ProviderConfigProperty.STRING_TYPE)
             .label("Keycloak API Key")
-            .helpText("API key for user Keycloak accessible endpoints")
+            .helpText("API key for Keycloak to access vp-tms API")
             .add()
 
             .property()
