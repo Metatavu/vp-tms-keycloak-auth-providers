@@ -49,10 +49,10 @@ public class DriverCardAuthenticatorFactory implements AuthenticatorFactory {
     public List<ProviderConfigProperty> getConfigProperties() {
         return ProviderConfigurationBuilder.create()
             .property()
-            .name(DriverCardAuthenticationConfig.VEHICLE_MANAGEMENT_API_KEY)
+            .name(DriverCardAuthenticationConfig.KEYCLOAK_API_KEY)
             .type(ProviderConfigProperty.STRING_TYPE)
-            .label("Vehicle Management API Key")
-            .helpText("API key for vehicle management")
+            .label("Keycloak API Key")
+            .helpText("API key for Keycloak to access vp-tms API")
             .add()
             .property()
             .name(DriverCardAuthenticationConfig.VEHICLE_MANAGEMENT_API_URL)

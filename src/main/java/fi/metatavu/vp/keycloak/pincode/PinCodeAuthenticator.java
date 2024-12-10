@@ -1,5 +1,6 @@
 package fi.metatavu.vp.keycloak.pincode;
 
+import fi.metatavu.vp.keycloak.drivercard.DriverCardAuthenticationConfig;
 import fi.metatavu.vp.keycloak.tms.TmsApiClient;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
@@ -149,7 +150,7 @@ public class PinCodeAuthenticator implements Authenticator {
      * @throws MalformedURLException if the user management API URL is invalid
      */
     private boolean isVerifiedClientApp(String deviceId, AuthenticatorConfigModel config) throws MalformedURLException {
-        String apiKey = config.getConfig().get(PinCodeAuthenticationConfig.USER_MANAGEMENT_API_KEY);
+        String apiKey = config.getConfig().get(PinCodeAuthenticationConfig.KEYCLOAK_API_KEY);
         String apiUrl = config.getConfig().get(PinCodeAuthenticationConfig.USER_MANAGEMENT_API_URL);
 
         TmsApiClient tmsApiClient = new TmsApiClient(apiKey, URI.create(apiUrl).toURL());

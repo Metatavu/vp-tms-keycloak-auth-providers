@@ -51,10 +51,10 @@ public class PinCodeAuthenticatorFactory implements AuthenticatorFactory {
     public List<ProviderConfigProperty> getConfigProperties() {
         return ProviderConfigurationBuilder.create()
             .property()
-            .name(PinCodeAuthenticationConfig.USER_MANAGEMENT_API_KEY)
+            .name(PinCodeAuthenticationConfig.KEYCLOAK_API_KEY)
             .type(ProviderConfigProperty.STRING_TYPE)
-            .label("User Management API Key")
-            .helpText("API key for user management service")
+            .label("Keycloak API Key")
+            .helpText("API key for Keycloak to access vp-tms API")
             .add()
 
             .property()
