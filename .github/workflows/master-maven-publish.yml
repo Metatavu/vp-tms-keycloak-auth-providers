@@ -6,7 +6,7 @@ on:
       distinct_id:
         description: 'run identifier'
         required: false
-        
+
 jobs:
   build:
     runs-on: ubuntu-latest

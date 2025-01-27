@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - develop
-      
+
 jobs:
   build:
     environment: develop
@@ -62,5 +62,3 @@ jobs:
         repository: Metatavu/vp-kuljetus-transport-management-keycloak
         event-type: update-staging
         token: ${{ secrets.KEYCLOAK_UPDATE_PAT }}
-
-    
